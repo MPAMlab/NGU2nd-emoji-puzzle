@@ -2,9 +2,9 @@
   <div>
     <h1>Emoji Password</h1>
     <div>
-      <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }">文本一</div>
-      <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }">文本二</div>
-      <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">文本三</div>
+      <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }">113.573424,34.814508</div>
+      <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }">113.547963,34.747164</div>
+      <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
     </div>
     <div>
       <input
