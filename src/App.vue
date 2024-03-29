@@ -10,19 +10,16 @@
       <input
         type="text"
         v-model="password[0]"
-        @input="enforceOneCharInput(0, $event)"
         maxlength="1"
       />
       <input
         type="text"
         v-model="password[1]"
-        @input="enforceOneCharInput(1, $event)"
         maxlength="1"
       />
       <input
         type="text"
         v-model="password[2]"
-        @input="enforceOneCharInput(2, $event)"
         maxlength="1"
       />
     </div>
@@ -46,19 +43,19 @@ export default {
       { used: 0 },
     ]);
 
-    const enforceOneCharInput = (index, event) => {
-      const input = event.target.value;
-      if (input.length > 1) {
-        password.value[index] = input.slice(-1); // 保留最后一个字符
-      }
-    };
+    //const enforceOneCharInput = (index, event) => {
+    //  const input = event.target.value;
+    //  if (input.length > 1) {
+    //    password.value[index] = input.slice(-1); // 保留最后一个字符
+    //  }
+    //};
 
     const submitPassword = async () => {
       showSuccess.value = false;
       showError.value = false;
 
       try {
-        const response = await fetch('/api/verify', {
+        const response = await fetch('https://qos6gq6i3f.execute-api.ap-northeast-1.amazonaws.com/default/emoji-puzzle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -83,7 +80,7 @@ export default {
 
     const fetchPasswordStatus = async () => {
       try {
-        const response = await fetch('/api/verify', {
+        const response = await fetch('https://qos6gq6i3f.execute-api.ap-northeast-1.amazonaws.com/default/emoji-puzzle', {
           method: 'GET',
         });
 
