@@ -75,7 +75,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': str(e)})
             }
 
-        # Check if the submitted password is correct and not already used
+        # Check if the submitted password (Unicode codepoints) is correct and not already used
         password_match = False
         for password_entry in passwords_data:
             if password_entry['password'] == submitted_password and password_entry['used'] == 0:

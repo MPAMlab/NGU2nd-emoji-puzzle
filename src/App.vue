@@ -7,21 +7,9 @@
       <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
     </div>
     <div>
-      <input
-        type="text"
-        v-model="password[0]"
-        maxlength="1"
-      />
-      <input
-        type="text"
-        v-model="password[1]"
-        maxlength="1"
-      />
-      <input
-        type="text"
-        v-model="password[2]"
-        maxlength="1"
-      />
+      <input type="text" v-model="password[0]" maxlength="1" />
+      <input type="text" v-model="password[1]" maxlength="1" />
+      <input type="text" v-model="password[2]" maxlength="1" />
     </div>
     <button @click="submitPassword">Submit</button>
     <div v-if="showSuccess" class="success">Success!</div>
@@ -43,24 +31,19 @@ export default {
       { used: 0 },
     ]);
 
-    //const enforceOneCharInput = (index, event) => {
-    //  const input = event.target.value;
-    //  if (input.length > 1) {
-    //    password.value[index] = input.slice(-1); // 保留最后一个字符
-    //  }
-    //};
-
     const submitPassword = async () => {
       showSuccess.value = false;
       showError.value = false;
 
       try {
+        const unicodePassword = password.value.map(char => char.codePointAt(0).toString(16).padStart(4, '0'));
+
         const response = await fetch('https://qos6gq6i3f.execute-api.ap-northeast-1.amazonaws.com/default/emoji-puzzle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ password: password.value }),
+          body: JSON.stringify({ password: unicodePassword }),
         });
 
         const data = await response.json();
@@ -102,7 +85,6 @@ export default {
 
     return {
       password,
-      enforceOneCharInput,
       submitPassword,
       showSuccess,
       showError,
@@ -116,11 +98,9 @@ export default {
 .success {
   color: green;
 }
-
 .error {
   color: red;
 }
-
 .strikethrough {
   text-decoration: line-through;
 }
