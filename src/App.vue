@@ -7,9 +7,9 @@
       <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
     </div>
     <div>
-      <input type="text" v-model="password[0]" maxlength="1" />
-      <input type="text" v-model="password[1]" maxlength="1" />
-      <input type="text" v-model="password[2]" maxlength="1" />
+      <input type="text" v-model="password[0]"/>
+      <input type="text" v-model="password[1]"/>
+      <input type="text" v-model="password[2]"/>
     </div>
     <button @click="submitPassword">Submit</button>
     <div v-if="showSuccess" class="success">Success!</div>
