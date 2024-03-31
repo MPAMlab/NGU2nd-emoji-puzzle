@@ -1,19 +1,34 @@
 <template>
-  <div>
-    <h1>Emoji Password</h1>
-    <div>
-      <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }">113.573424,34.814508</div>
-      <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }">113.547963,34.747164</div>
-      <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
+  <div class="container">
+    <header>
+      <img src="./assets/header.webp" alt="Header Image" />
+    </header>
+    <div class="background">
+      <div class="animation-background">
+        <img src="./assets/grid.webp" alt="Animation Background" />
+      </div>
+      <div class="background-image">
+        <img src="./assets/background-image.webp" alt="Background Image" />
+      </div>
     </div>
-    <div>
-      <input type="text" v-model="password[0]"/>
-      <input type="text" v-model="password[1]"/>
-      <input type="text" v-model="password[2]"/>
+    <div class="content">
+      <div class="password-status">
+        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }">113.573424,34.814508</div>
+        <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }">113.547963,34.747164</div>
+        <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
+      </div>
+      <div class="emoji-inputs">
+        <input type="text" v-model="password[0]" />
+        <input type="text" v-model="password[1]" />
+        <input type="text" v-model="password[2]" />
+      </div>
+      <button @click="submitPassword">Submit</button>
+      <div v-if="showSuccess" class="success">Success!</div>
+      <div v-if="showError" class="error">Error!</div>
     </div>
-    <button @click="submitPassword">Submit</button>
-    <div v-if="showSuccess" class="success">Success!</div>
-    <div v-if="showError" class="error">Error!</div>
+    <footer>
+      <img src="./assets/footer.webp" alt="Footer Image" />
+    </footer>
   </div>
 </template>
 
@@ -95,12 +110,151 @@ export default {
 </script>
 
 <style>
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  min-height: 100vh;
+}
+
+header, footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+header {
+  top: 0;
+}
+
+header img {
+  width: 100%;
+  height: auto;
+}
+
+footer {
+  bottom: 0;
+}
+
+footer img {
+  width: 100%;
+  height: auto;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.animation-background,
+.background-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.animation-background img,
+.background-image img {
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@-webkit-keyframes fadeAnimation {
+  0% {
+    opacity: 0;
+    -webkit-filter: brightness(2);
+    filter: brightness(2);
+  }
+  50% {
+    opacity: 1;
+    -webkit-filter: brightness(1);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    -webkit-filter: brightness(2);
+    filter: brightness(2);
+  }
+}
+
+@keyframes fadeAnimation {
+  0% {
+    opacity: 0;
+    -webkit-filter: brightness(2);
+    filter: brightness(2);
+  }
+  50% {
+    opacity: 1;
+    -webkit-filter: brightness(1);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    -webkit-filter: brightness(2);
+    filter: brightness(2);
+  }
+}
+
+.animation-background img {
+  -webkit-animation: fadeAnimation 5s infinite;
+  animation: fadeAnimation 5s infinite;
+}
+.animation-background {
+  z-index: 1;
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  text-align: center;
+}
+
+.password-status {
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.emoji-inputs input {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  margin: 0 5px;
+}
+
 .success {
   color: green;
 }
+
 .error {
   color: red;
 }
+
 .strikethrough {
   text-decoration: line-through;
 }

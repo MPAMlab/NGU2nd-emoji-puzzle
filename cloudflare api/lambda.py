@@ -15,9 +15,9 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'headers': {
-                'Access-Control-Allow-Origin': '*',  # Use the correct domain in production
+                'Access-Control-Allow-Origin': 'https://399.0236.fun, *, https://ngu-2nd-emoji-puzzle.vercel.app',  # 替换为你的网站域
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type'
+                'Access-Control-Allow-Headers': 'Content-Type, Origin, X-Requested-With, Accept'
             },
             'body': json.dumps({'message': 'You can use POST to submit passwords'})
         }
@@ -37,16 +37,22 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Error getting the passwords data'})
             }
 
-        # Extract only the password-id and used status
-        used_status_list = [{'password-id': pw['password-id'], 'used': pw['used']} for pw in passwords_data]
+        # Extract the password-id, used status, image, and text
+        response_data = []
+        for pw in passwords_data:
+            data = {'password-id': pw['password-id'], 'used': pw['used']}
+            if pw['used'] == 1:
+                data['image'] = pw['image']
+                data['text'] = pw['text']
+            response_data.append(data)
 
-        # Respond with the password-ids and their used status
+        # Respond with the password-ids, their used status, and additional data if used
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps(used_status_list)
+            'body': json.dumps(response_data)
         }
     # Handle the main POST request
     if event['httpMethod'] == 'POST':
@@ -57,7 +63,10 @@ def lambda_handler(event, context):
             return {
                 'statusCode': 400,
                 'headers': {
-                    'Access-Control-Allow-Origin': 'https://399.0236.fun, *'
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': True,
+                    'Access-Control-Allow-Methods': 'POST',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
                 'body': json.dumps({'error': 'Bad Request'})
             }
@@ -70,20 +79,24 @@ def lambda_handler(event, context):
             return {
                 'statusCode': 500,
                 'headers': {
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': True,
+                    'Access-Control-Allow-Methods': 'POST',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
                 'body': json.dumps({'error': str(e)})
             }
 
-        # Check if the submitted password (Unicode codepoints) is correct and not already used
-        password_match = False
+        # Check if the submitted password (Unicode codepoints) is correct
+        password_match = None
         for password_entry in passwords_data:
-            if password_entry['password'] == submitted_password and password_entry['used'] == 0:
-                password_match = True
-                password_entry['used'] = 1  # Mark as used
+            if password_entry['password'] == submitted_password:
+                password_match = password_entry
+                if password_entry['used'] == 0:
+                    password_entry['used'] = 1  # Mark as used
                 break
 
-        # Update the passwords file in S3 if there was a match
+        # If a password match was found
         if password_match:
             try:
                 s3_client.put_object(Bucket=BUCKET_NAME, Key=FILE_NAME, Body=json.dumps(passwords_data))
@@ -91,22 +104,35 @@ def lambda_handler(event, context):
                 return {
                     'statusCode': 500,
                     'headers': {
-                        'Access-Control-Allow-Origin': '*'
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': True,
+                        'Access-Control-Allow-Methods': 'POST',
+                        'Access-Control-Allow-Headers': 'Content-Type'
                     },
                     'body': json.dumps({'error': str(e)})
                 }
             return {
                 'statusCode': 200,
                 'headers': {
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': True,
+                    'Access-Control-Allow-Methods': 'POST',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
-                'body': json.dumps({'result': 'Success'})
+                'body': json.dumps({
+                    'result': 'Success',
+                    'image': password_match['image'],
+                    'text': password_match['text']
+                })
             }
         else:
             return {
                 'statusCode': 403,
                 'headers': {
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': True,
+                    'Access-Control-Allow-Methods': 'POST',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
                 'body': json.dumps({'result': 'Error'})
             }
@@ -115,7 +141,10 @@ def lambda_handler(event, context):
         return {
             'statusCode': 405,
             'headers': {
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': True,
+                'Access-Control-Allow-Methods': 'POST',
+                'Access-Control-Allow-Headers': 'Content-Type'
             },
             'body': json.dumps({'error': 'Method Not Allowed'})
         }
