@@ -328,7 +328,7 @@ button {
 }
 
 .strikethrough {
-  text-decoration: line-through;
+  color: green;
 }
 .play-regular {
   font-family: "Play", sans-serif;
