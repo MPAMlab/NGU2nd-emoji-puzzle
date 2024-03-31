@@ -13,9 +13,27 @@
     </div>
     <div class="content">
       <div class="password-status">
-        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.573424,34.814508</div>
-        <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }" class="play-regular">113.547963,34.747164</div>
-        <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }" class="play-regular">113.620766,34.742025</div>
+        <div
+          :class="{ strikethrough: passwordStatus[0].used === 1, link: passwordStatus[0].used === 1 }"
+          class="play-regular"
+          @click="openModal(passwordStatus[0].image, passwordStatus[0].text)"
+        >
+          113.573424,34.814508
+        </div>
+        <div
+          :class="{ strikethrough: passwordStatus[1].used === 1, link: passwordStatus[1].used === 1 }"
+          class="play-regular"
+          @click="openModal(passwordStatus[1].image, passwordStatus[1].text)"
+        >
+          113.547963,34.747164
+        </div>
+        <div
+          :class="{ strikethrough: passwordStatus[2].used === 1, link: passwordStatus[2].used === 1 }"
+          class="play-regular"
+          @click="openModal(passwordStatus[2].image, passwordStatus[2].text)"
+        >
+          113.620766,34.742025
+        </div>
       </div>
       <div class="emoji-inputs">
         <input type="text" v-model="password[0]" />
@@ -23,32 +41,50 @@
         <input type="text" v-model="password[2]" />
       </div>
       <button @click="submitPassword" class="btn">Submit</button>
-      <div v-if="showSuccess" class="success">Success!</div>
-      <div v-if="showError" class="error">Error!</div>
     </div>
     <footer>
       <img src="./assets/footer.webp" alt="Footer Image" />
     </footer>
+    <!-- 成功弹窗 -->
+    <SuccessModal v-if="showSuccessModal" :image="modalImage" @close-modal="closeModal" />
+
+    <!-- 错误弹窗 -->
+    <div v-if="showErrorModal" class="error-modal">
+      <div class="error-modal-content">
+        <p v-if="modalText">{{ modalText }}</p>
+        <p v-else>输入错误或格式不正确</p>
+        <button @click="closeModal" class="btn">关闭</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
 import { onBeforeUnmount } from 'vue';
+import SuccessModal from './components/SuccessModal.vue';
 export default {
+  components: {
+    SuccessModal,
+  },
   setup() {
     const password = ref(['', '', '']);
     const showSuccess = ref(false);
     const showError = ref(false);
+    const showSuccessModal = ref(false);
+    const showErrorModal = ref(false);
     const passwordStatus = ref([
       { used: 0 },
       { used: 0 },
       { used: 0 },
     ]);
+    const modalImage = ref('');
+    const modalText = ref('');
 
     const submitPassword = async () => {
-      showSuccess.value = false;
-      showError.value = false;
+      showSuccessModal.value = false;
+      showErrorModal.value = false;
+
 
       try {
         const unicodePassword = password.value.map(char => char.codePointAt(0).toString(16).padStart(4, '0'));
@@ -65,13 +101,18 @@ export default {
 
         if (response.ok) {
           showSuccess.value = true;
-          fetchPasswordStatus(); // Update the password status after successful submission
+          fetchPasswordStatus(); // 更新密码状态后显示弹窗
+          showSuccessModal.value = true;
+          modalImage.value = data.image;
         } else {
           showError.value = true;
+          showErrorModal.value = true; // 显示错误弹窗
+          modalText.value = data.error;
           console.error('Error:', data.error);
         }
       } catch (error) {
         showError.value = true;
+        showErrorModal.value = true; // 显示错误弹窗
         console.error('Error:', error);
       }
     };
@@ -93,6 +134,18 @@ export default {
         console.error('Error:', error);
       }
     };
+    const openModal = (image, text) => {
+      showSuccessModal.value = true;
+      modalImage.value = image;
+      modalText.value = text;
+    };
+    const closeModal = () => {
+      showSuccessModal.value = false;
+      showErrorModal.value = false;
+      modalImage.value = '';
+      modalText.value = '';
+    };
+
     const scaleContent = () => {
       const backgroundImg = document.querySelector('.background-image img');
       if (backgroundImg) {
@@ -115,18 +168,26 @@ export default {
 
     onMounted(() => {
       fetchPasswordStatus();
-      scaleContent(); // 页面加载时缩放内容
-      window.addEventListener('resize', scaleContent); // 窗口大小改变时重新缩放内容
+      scaleContent();
+      window.addEventListener('resize', scaleContent);
     });
+
     onBeforeUnmount(() => {
       window.removeEventListener('resize', scaleContent);
     });
+
     return {
       password,
       submitPassword,
       showSuccess,
       showError,
       passwordStatus,
+      showSuccessModal,
+      showErrorModal,
+      modalImage,
+      modalText,
+      closeModal,
+      openModal,
     };
   },
 };
@@ -134,6 +195,7 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap');
 body, html {
   margin: 0;
   padding: 0;
@@ -251,7 +313,6 @@ footer img {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* transform: translate(-50%, -50%); 不再需要这里，因为它会在 JS 中设置 */
   z-index: 3;
   text-align: center;
   display: flex;
@@ -264,7 +325,7 @@ footer img {
   backdrop-filter: blur(5px);
   padding: 20px;
   position: absolute;
-  top: -150px; /* 调整此值以控制与 emoji-inputs 的距离 */
+  top: -150px;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 5px;
@@ -275,7 +336,7 @@ footer img {
 }
 button {
   position: absolute;
-  bottom: -90px; /* 调整此值以控制与 emoji-inputs 的距离 */
+  bottom: -90px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -330,9 +391,80 @@ button {
 .strikethrough {
   color: green;
 }
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+}
 .play-regular {
   font-family: "Play", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
+
+.modal {
+  position: fixed;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  margin: 15% auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  text-align: center;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.error-modal {
+  position: fixed;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.error-modal-content {
+  background-color: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(10px);
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  text-align: center;
+  border-radius: 5px;
+  font-family: "Noto Sans SC", sans-serif;
+  font-optical-sizing: auto;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-content img {
+  max-width: 100%;
+  height: auto;
+}
+
 </style>
