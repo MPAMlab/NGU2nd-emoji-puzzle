@@ -14,15 +14,15 @@
     <div class="content">
       <div class="password-status">
         <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.573424,34.814508</div>
-        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.547963,34.747164</div>
-        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.620766,34.742025</div>
+        <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }" class="play-regular">113.547963,34.747164</div>
+        <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }" class="play-regular">113.620766,34.742025</div>
       </div>
       <div class="emoji-inputs">
         <input type="text" v-model="password[0]" />
         <input type="text" v-model="password[1]" />
         <input type="text" v-model="password[2]" />
       </div>
-      <button @click="submitPassword">Submit</button>
+      <button @click="submitPassword" class="btn">Submit</button>
       <div v-if="showSuccess" class="success">Success!</div>
       <div v-if="showError" class="error">Error!</div>
     </div>
@@ -98,13 +98,21 @@ export default {
       if (backgroundImg) {
         const idealWidth = 770; // 定义理想宽度
         const currentWidth = backgroundImg.offsetWidth; // 获取当前宽度
-        const scaleFactor = currentWidth / idealWidth; // 计算缩放因子
-        const contentDiv = document.querySelector('.content');
-        if (contentDiv) {
-          contentDiv.style.transform = `translate(-50%, -50%) scale(${scaleFactor})`;
+        if (currentWidth > idealWidth) {
+          const scaleFactor = currentWidth / idealWidth; // 计算缩放因子
+          const contentDiv = document.querySelector('.content');
+          if (contentDiv) {
+            contentDiv.style.transform = `translate(-50%, -50%) scale(${scaleFactor})`;
+          }
+        } else {
+          const contentDiv = document.querySelector('.content');
+          if (contentDiv) {
+            contentDiv.style.transform = 'translate(-50%, -50%)';
+          }
         }
       }
     };
+
     onMounted(() => {
       fetchPasswordStatus();
       scaleContent(); // 页面加载时缩放内容
@@ -271,12 +279,44 @@ button {
   left: 50%;
   transform: translateX(-50%);
 }
+.btn,
+.btn:focus {
+    min-width: 200px;
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-sizing: inherit;
+    padding: 10px 20px;
+    border: 1px solid;
+    box-shadow: inset 0 0 20px rgba(225, 51, 45, 0);
+    outline: 1px solid !important;
+    outline-color: rgba(225, 51, 45, 0.5);
+    outline-offset: 0px;
+    text-shadow: none;
+    transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+    backdrop-filter: blur(8px);
+    font-family: "Play", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.btn:hover {
+    color: #E1332D;
+    border: 1px solid;
+    box-shadow: inset 0 0 20px rgba(225, 51, 45, 0.5), 0 0 20px rgba(225, 51, 45, 0.2);
+    outline: 1px solid !important;
+    outline-color: rgba(225, 51, 45, 0) !important;
+    outline-offset: 15px;
+    text-shadow: 1px 1px 2px #427388;
+}
 .emoji-inputs input {
   width: 50px;
   height: 50px;
   font-size: 24px;
   text-align: center;
-  margin: 0 25px;
+  margin: 0 3.5vh;
 }
 
 .success {
