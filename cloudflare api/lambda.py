@@ -42,8 +42,8 @@ def lambda_handler(event, context):
         for pw in passwords_data:
             data = {'password-id': pw['password-id'], 'used': pw['used']}
             if pw['used'] == 1:
-                data['image'] = pw['image']
-                data['text'] = pw['text']
+                data['image'] = pw.get('image', '')
+                data['text'] = pw.get('text', '')
             response_data.append(data)
 
         # Respond with the password-ids, their used status, and additional data if used
@@ -111,6 +111,12 @@ def lambda_handler(event, context):
                     },
                     'body': json.dumps({'error': str(e)})
                 }
+
+            response_data = {'result': 'Success'}
+            if password_match:
+                response_data['image'] = password_match.get('image', '')
+                response_data['text'] = password_match.get('text', '')
+
             return {
                 'statusCode': 200,
                 'headers': {
@@ -119,11 +125,7 @@ def lambda_handler(event, context):
                     'Access-Control-Allow-Methods': 'POST',
                     'Access-Control-Allow-Headers': 'Content-Type'
                 },
-                'body': json.dumps({
-                    'result': 'Success',
-                    'image': password_match['image'],
-                    'text': password_match['text']
-                })
+                'body': json.dumps(response_data)
             }
         else:
             return {
