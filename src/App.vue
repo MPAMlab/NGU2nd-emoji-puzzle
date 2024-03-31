@@ -13,9 +13,9 @@
     </div>
     <div class="content">
       <div class="password-status">
-        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }">113.573424,34.814508</div>
-        <div :class="{ 'strikethrough': passwordStatus[1].used === 1 }">113.547963,34.747164</div>
-        <div :class="{ 'strikethrough': passwordStatus[2].used === 1 }">113.620766,34.742025</div>
+        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.573424,34.814508</div>
+        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.547963,34.747164</div>
+        <div :class="{ 'strikethrough': passwordStatus[0].used === 1 }" class="play-regular">113.620766,34.742025</div>
       </div>
       <div class="emoji-inputs">
         <input type="text" v-model="password[0]" />
@@ -34,7 +34,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-
+import { onBeforeUnmount } from 'vue';
 export default {
   setup() {
     const password = ref(['', '', '']);
@@ -93,11 +93,26 @@ export default {
         console.error('Error:', error);
       }
     };
-
+    const scaleContent = () => {
+      const backgroundImg = document.querySelector('.background-image img');
+      if (backgroundImg) {
+        const idealWidth = 770; // 定义理想宽度
+        const currentWidth = backgroundImg.offsetWidth; // 获取当前宽度
+        const scaleFactor = currentWidth / idealWidth; // 计算缩放因子
+        const contentDiv = document.querySelector('.content');
+        if (contentDiv) {
+          contentDiv.style.transform = `translate(-50%, -50%) scale(${scaleFactor})`;
+        }
+      }
+    };
     onMounted(() => {
       fetchPasswordStatus();
+      scaleContent(); // 页面加载时缩放内容
+      window.addEventListener('resize', scaleContent); // 窗口大小改变时重新缩放内容
     });
-
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', scaleContent);
+    });
     return {
       password,
       submitPassword,
@@ -110,6 +125,7 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
 body, html {
   margin: 0;
   padding: 0;
@@ -227,24 +243,40 @@ footer img {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  /* transform: translate(-50%, -50%); 不再需要这里，因为它会在 JS 中设置 */
   z-index: 3;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .password-status {
   background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(5px);
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 20px;
+  position: absolute;
+  top: -150px; /* 调整此值以控制与 emoji-inputs 的距离 */
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
 }
 
+.emoji-inputs {
+  display: flex;
+}
+button {
+  position: absolute;
+  bottom: -90px; /* 调整此值以控制与 emoji-inputs 的距离 */
+  left: 50%;
+  transform: translateX(-50%);
+}
 .emoji-inputs input {
   width: 50px;
   height: 50px;
   font-size: 24px;
   text-align: center;
-  margin: 0 5px;
+  margin: 0 25px;
 }
 
 .success {
@@ -257,5 +289,10 @@ footer img {
 
 .strikethrough {
   text-decoration: line-through;
+}
+.play-regular {
+  font-family: "Play", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 </style>
