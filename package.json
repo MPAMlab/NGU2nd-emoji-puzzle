@@ -39,5 +39,8 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "engines": {
+    "node": ">=12.22.0 || >=14.17.0 || >=16.0.0"
+  }
 }

@@ -8,8 +8,8 @@
  */
 
 // R2 bucket details
-const R2_BUCKET = 'emoji-puzzle'
-const R2_ACCOUNT_ID = 'f64e8212f97d04229f537b65e047ae04'
+const R2_BUCKET = ''
+const R2_ACCOUNT_ID = ''
 
 // Password file name in the R2 bucket
 const PASSWORD_FILE = 'passwords.json'
