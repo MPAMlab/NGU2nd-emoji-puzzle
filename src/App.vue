@@ -16,21 +16,21 @@
         <div
           :class="{ strikethrough: passwordStatus[0].used === 1, link: passwordStatus[0].used === 1 }"
           class="play-regular"
-          @click="openModal(passwordStatus[0].image, passwordStatus[0].text)"
+          @click="openModal(passwordStatus[0].image, passwordStatus[0].text, 0)"
         >
           113.573424,34.814508
         </div>
         <div
           :class="{ strikethrough: passwordStatus[1].used === 1, link: passwordStatus[1].used === 1 }"
           class="play-regular"
-          @click="openModal(passwordStatus[1].image, passwordStatus[1].text)"
+          @click="openModal(passwordStatus[1].image, passwordStatus[1].text, 1)"
         >
           113.547963,34.747164
         </div>
         <div
           :class="{ strikethrough: passwordStatus[2].used === 1, link: passwordStatus[2].used === 1 }"
           class="play-regular"
-          @click="openModal(passwordStatus[2].image, passwordStatus[2].text)"
+          @click="openModal(passwordStatus[2].image, passwordStatus[2].text, 2)"
         >
           113.620766,34.742025
         </div>
@@ -134,7 +134,10 @@ export default {
         console.error('Error:', error);
       }
     };
-    const openModal = (image, text) => {
+    const openModal = (image, text, index) => {
+      if (passwordStatus.value[index].used === 0) {
+    return; // 如果密码已经被使用，则不执行后续代码
+    }
       showSuccessModal.value = true;
       modalImage.value = image;
       modalText.value = text;
