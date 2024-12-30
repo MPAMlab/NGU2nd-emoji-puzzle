@@ -343,35 +343,35 @@ footer img {
 .input-wrapper{
   width: 50px;
   height: 50px;
-  position: relative;
+     margin: 0 3.5vh;
+   position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 3.5vh;
 }
 .custom-input {
-   width: 100%;
-   height: 100%;
+    width: 55px;
+    height: 55px;
     font-size: 24px;
     text-align: center;
-    position: absolute;
-    top: 0;
-     left: 0;
-     background-color: rgba(255,255,255,0.3);
-     border: 1px solid #fff;
-    border-radius: 5px;
+    background-color: rgba(255,255,255,0.3);
+    border: 1px solid #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    color: #000;
      padding: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(30deg);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
 }
+
 .custom-input:focus {
-     outline: none;
+    outline: none;
     box-shadow: 0 0 10px rgba(255,255,255,0.5);
 }
-
 button {
   position: absolute;
   bottom: -90px;
